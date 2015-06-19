@@ -1,0 +1,45 @@
+Description: Debian specific settings
+Author: Alexander Wirt <formorer@debian.org>
+
+--- a/etc/nsca-ng.cfg
++++ b/etc/nsca-ng.cfg
+@@ -8,9 +8,28 @@
+ #
+ # Most probably, you'll have to specify the path to the Nagios command file.
+ #
+-command_file = "/usr/local/nagios/var/rw/nagios.cmd"
++
++# command_file for nagios3
++command_file = "/var/lib/nagios3/rw/nagios.cmd"
++
++# command_file for icinga
++#command_file= "/var/lib/icinga/rw/icinga.cmd"
++
++# Debian specific settings
++listen = "localhost:5668" # only listen on localhost. If you use systemd this
++                          # this option is overriden by the
++                          # nsca-ng-server.socket file.
++
++user = "nagios" # run as user nagios
++pid_file = "/var/run/nsca-ng/nsca-ng.pid" # pid file for nsca-ng
+ 
+ #
++# local configuration:
++#   if you'd prefer, you can instead place directives here
++include(/etc/nsca-ng/nsca-ng.local.cfg)
++
++#
++#
+ # These configuration settings are optional.
+ #
+ # 	listen = "monitoring.example.com:5668"  # Default: "*".
+@@ -105,6 +124,9 @@
+ # commands), at least one "commands", "hosts", and/or "services" expression must
+ # be specified.
+ #
++# This authorization line only allows pinging of the server, but you probably
++# want to change the password if you go into production
++
+ authorize "*" {
+ 	password = "change-me"
+ 	#

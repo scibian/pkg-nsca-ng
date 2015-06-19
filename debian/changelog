@@ -1,0 +1,42 @@
+nsca-ng (1.4-2) unstable; urgency=medium
+
+  * [3928f0d] Create /var/run/nsca-ng if started via systemd (Closes: #784431)
+
+ -- Alexander Wirt <formorer@debian.org>  Fri, 19 Jun 2015 14:09:00 +0200
+
+nsca-ng (1.4-1) unstable; urgency=medium
+
+  * [681226d] Fix postinst
+  * [8e6a5cf] Imported Upstream version 1.4
+              - Fix pidfile(3) API detection
+                (Closes: #750401)
+  * [e36f694] Refresh patch
+  * [af0c838] Add systemd support
+  * [5d6f4c1] deprecate default file
+  * [a29a1bd] Bump standards version
+  * [1af9aea] Make linitian happy
+  * [72a1b75] Add some notes about socket activation in config
+
+ -- Alexander Wirt <formorer@debian.org>  Fri, 17 Oct 2014 15:49:54 +0200
+
+nsca-ng (1.2-1) unstable; urgency=low
+
+  * [594ee2f] Imported Upstream version 1.2
+
+ -- Alexander Wirt <formorer@debian.org>  Thu, 07 Nov 2013 07:06:20 +0100
+
+nsca-ng (1.1-1) unstable; urgency=low
+
+  * [47cbbe8] Remove unused file
+  * [6a8c9fc] Fix piddir generation in postinst
+              (Closes: #705377)
+  * [9e0c4dc] Imported Upstream version 1.1
+  * [126f404] Update nsca-ng.cfg_debian_config
+
+ -- Alexander Wirt <formorer@debian.org>  Sun, 14 Apr 2013 07:59:55 +0200
+
+nsca-ng (0.3-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Alexander Wirt <formorer@debian.org>  Mon, 25 Feb 2013 17:50:06 +0100

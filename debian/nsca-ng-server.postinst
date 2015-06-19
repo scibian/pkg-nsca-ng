@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -e
+
+setperm() {
+    local user="$1"
+        local group="$2"
+        local mode="$3"
+        local file="$4"
+        shift 4
+# only do something when no setting exists
+        if ! dpkg-statoverride --list "$file" >/dev/null 2>&1; then
+            chown "$user":"$group" "$file"
+                chmod "$mode" "$file"
+                fi
+}
+
+case "$1" in
+    configure)
+        if ! getent passwd nagios > /dev/null ; then
+            echo 'Adding system-user for nagios' 1>&2
+            adduser --system --group --home /var/lib/nagios \
+                --disabled-login --force-badname nagios > /dev/null
+        fi
+
+        # explicitly set some permissions
+        setperm root root 0600 /etc/nsca-ng/nsca-ng.cfg
+
+        test -d /var/run/nsca-ng || mkdir -p /var/run/nsca-ng
+        setperm nagios nagios 0700 /var/run/nsca-ng
+
+    ;;
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+    *)
+    echo "postinst called with unknown argument \$1'" >&2
+    exit 1
+    ;;
+esac
+
+#DEBHELPER#

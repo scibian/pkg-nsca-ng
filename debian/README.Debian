@@ -1,0 +1,22 @@
+Welcome to the nsca-ng package for Debian GNU/Linux!
+
+You can contact the nsca-ng maintainers at:
+	pkg-nagios-devel@lists.alioth.debian.org
+
+Enabling the daemon
+-------------------
+
+To enable the daemon set NSCA-NG in /etc/default/nsca-ng-server to "yes".
+
+Using nsca-ng
+-------------
+
+If you want to use nsca-ng with Icinga just comment out the  "command_file" for nagios3
+and enable the prepared "command_file" for icinga.
+
+If you are missing your command socket it is a good idea to read either
+/usr/share/doc/nagios3/README.Debian or /usr/share/doc/icinga/README.Debian
+(the "External Commands" paragraph).
+
+The daemon is bound to localhost by default, you probably want to change this in 
+"/etc/nsca-ng/nsca-ng.local.cfg" when you are done with your configuration.

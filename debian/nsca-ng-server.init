@@ -1,0 +1,121 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          nsca-ng
+# Required-Start:    $remote_fs $network $syslog
+# Required-Stop:     $remote_fs $network $syslog
+# Should-Start:      $named nagios3 icinga
+# Should-Stop:       $named nagios3 icinga
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Accept monitoring commands
+# Description:       The NSCA-ng server makes the Nagios command file accessible
+#                    from remote systems.  This allows for submitting passive
+#                    check results, downtimes, and many other commands to Nagios
+#                    or Icinga.
+### END INIT INFO
+
+PATH='/sbin:/usr/sbin:/bin:/usr/bin'
+NAME='nsca-ng'
+DESC='monitoring command acceptor'
+DAEMON="/usr/sbin/$NAME"
+PIDDIR="/var/run/nsca-ng/"
+PIDFILE="$PIDDIR/nsca-ng.pid"
+CFGFILE="/etc/nsca-ng/nsca-ng.cfg"
+
+# Exit if the package is not installed.
+[ -x "$DAEMON" ] || exit 0
+
+# Read configuration variable file if it is present.
+[ -r "/etc/default/${NAME}-server" ] && . "/etc/default/${NAME}-server"
+
+# Define LSB log_* functions.
+. /lib/lsb/init-functions
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+if [ -r "$CFGFILE" ]
+then
+	: ${DAEMONUSER:="$(sed -r -n "s/^[[:blank:]]*user[[:blank:]]*=[[:blank:]]*[\"']?([^\"'#[:blank:]]+).*/\1/p" "$CFGFILE")"}
+else
+    log_failure_msg "Please configure user in nsca-ng.cfg, running nsca-ng.cfg is not recommended"
+    exit 1
+fi
+
+# Check whether that user actually exists.
+if ! getent passwd "$DAEMONUSER" >'/dev/null'
+then
+	log_failure_msg "Configured user \"$DAEMONUSER\" doesn't exist, aborting."
+	exit 1
+fi
+
+# Create PID directory and hand it over to the $DAEMONUSER.
+if [ ! -d "$PIDDIR" ]
+then
+	mkdir -p "$PIDDIR"
+	chown "$DAEMONUSER:$DAEMONUSER" "$PIDDIR"
+fi
+
+# Set the default command line arguments.
+: ${DAEMONARGS:="-P $PIDFILE -c $CFGFILE -s"}
+
+DAEMONCTL="start-stop-daemon --quiet --pidfile $PIDFILE --exec $DAEMON"
+
+check_started() {
+	if ! start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null
+	then
+		return 0 #is started
+	else
+		return 1 #isn't started
+	fi
+}
+
+status()
+{
+  log_action_begin_msg "checking $DAEMON"
+  if check_started; then
+    log_action_end_msg 0 "running"
+  else
+    if [ -e "$PIDFILE" ]; then
+      log_action_end_msg 1 "$DAEMON failed"
+      exit 1
+    else
+      log_action_end_msg 1 "not running"
+      exit 3
+    fi  
+  fi  
+}
+
+case $1 in
+start)
+	log_daemon_msg "Starting $DESC" "$NAME"
+	if ! check_started
+	then
+		$DAEMONCTL --start -- $DAEMONARGS
+	fi
+	log_end_msg $?
+	;;
+stop)
+	log_daemon_msg "Stopping $DESC" "$NAME"
+	$DAEMONCTL --stop --retry 'TERM/30/KILL/5'
+	log_end_msg $?
+	;;
+restart)
+	"$0" 'stop' && sleep 1 && "$0" 'start'
+	;;
+reload|force-reload)
+	log_daemon_msg "Reloading $DESC" "$NAME"
+	$DAEMONCTL --stop --signal 1
+	log_end_msg $?
+	;;
+status)
+	status
+	;;
+*)
+	echo >&2 "Usage: $0 {start|stop|status|restart|reload|force-reload}"
+	exit 3
+	;;
+esac
+
+:

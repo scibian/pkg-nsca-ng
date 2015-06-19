@@ -1,0 +1,3 @@
+debian/nsca-ng.local.cfg etc/nsca-ng
+etc/nsca-ng.cfg etc/nsca-ng
+usr/sbin/nsca-ng
