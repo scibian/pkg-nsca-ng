@@ -1,5 +1,5 @@
 Source: nsca-ng
-Section: scibian
+Section: net
 Priority: extra
 Maintainer: Scibian Project <packaging@scibian.org>
 Build-Depends: autotools-dev,
@@ -29,7 +29,7 @@ Description: Send monitoring commands to NSCA-ng server
 
 Package: nsca-ng-server
 Architecture: any
-Section: scibian
+Section: net
 Depends: adduser, ${misc:Depends}, ${shlibs:Depends}
 Recommends: nagios3 | icinga
 Description: Monitoring command acceptor
