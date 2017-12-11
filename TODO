@@ -1,0 +1,63 @@
+NSCA-ng Task List
+=================
+
+The to-do items are listed in no particular order.
+
+Wish List Items for NSCA-ng
+---------------------------
+
+- Let the server support command authorization based on host and service
+  groups.  This requires the server to actually parse the submitted
+  commands, as oppposed to simply matching them against the user-supplied
+  regular expressions.
+
+- Let the server support a `clients` or `sources` directive that allows the
+  user to specify one or more subnets (globally and/or per-client).
+  Connections from source addresses outside these subnets should be
+  rejected.
+
+- Let the server support proxying of (selected or all) data (with `forward`
+  blocks in the configuration, for example).
+
+- Support requests for status and configuration data in order to provide a
+  full-blown remote API.
+
+- Let the client execute standard Nagios plugins directly (as an alternative
+  to using a script such as `contrib/invoke_check`), and maybe provide a
+  daemon mode with poor man's check scheduling (i.e., add `check_interval`
+  and `retry_interval` directives to the client configuration).
+
+- If the server is not available, let the client queue commands and results
+  using local storage and submit them as soon as the server comes up again.
+
+- Let the client talk to multiple servers.
+
+- Port the client to Microsoft Windows.
+
+- Create a client library with Perl (and maybe Python) bindings.
+
+Wish List Items for OpenSSL
+---------------------------
+
+- Add IPv6 support to OpenSSL's `BIO_s_connect(3)` API, so that the client
+  can use IPv6.  (The server supports IPv6 already.)  There's a [ticket][1]
+  with a patch in OpenSSL's tracker, and a related [discussion][2] on the
+  OpenSSL development mailing list.
+
+- Support NULL encryption TLS-PSK cipher suites as defined in [RFC 4785][3].
+  This should make it easier to use tools such as `tcpdump(8)` for debugging
+  NSCA-ng sessions.  There's an [older][4] and a [newer][5] patch in
+  OpenSSL's tracker.
+
+- Support SHA-256/384 (and GCM) TLS-PSK cipher suites as per [RFC 5487][6].
+  Someone [played around with this][7] already.
+
+[1]: http://rt.openssl.org/Ticket/Display.html?id=1365
+[2]: http://thread.gmane.org/gmane.comp.encryption.openssl.devel/11207
+[3]: http://tools.ietf.org/html/rfc4785
+[4]: http://rt.openssl.org/Ticket/Display.html?id=1886
+[5]: http://rt.openssl.org/Ticket/Display.html?id=2299
+[6]: http://tools.ietf.org/html/rfc5487
+[7]: http://permalink.gmane.org/gmane.comp.encryption.openssl.user/44388
+
+<!-- vim:set filetype=markdown textwidth=76 joinspaces: -->

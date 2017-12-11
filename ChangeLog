@@ -1,0 +1,1112 @@
+2014-10-14  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* NEWS, configure.ac: NSCA-ng 1.4
+
+2014-10-09  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* python/uthash.h: Update python/uthash.h
+
+	Grab the current version from the uthash repository (commit ID:
+	fe01a6ad1bf5fa722930d074fd41d0214d351a7e).
+
+	* AUTHORS, COPYING, python/client.c, python/client.h, python/nscang.c:
+	Python module: Add authorship/copyright notices
+
+	* python/client.c, python/client.h, python/nscang.c: Python module:
+	Change code formatting
+
+	Change the coding style of the Python module for consistency with the
+	rest of our code.
+
+	* python/setup.py: Apply whitespace changes
+
+	* python/README, python/README.md: python/README: Convert to Markdown
+
+	Convert the python/README file to Markdown, and add a symbolic link so
+	that some web-based Git hosting services render it as such.
+
+	* python/README: Apply cosmetic changes
+
+	Change a few details in the README file of the Python module, such as
+	the indentation and host names in the example code.
+
+	* python/PKG-INFO: Update python/PKG-INFO file
+
+	Specify the "home-page" and "platform", and omit the optional
+	"description" field.
+
+	* Makefile.am, configure.ac, python/Makefile.am: Add python/Makefile.am
+	file
+
+	Include the Python module with our source tarballs.
+
+	* .gitignore: Let Git ignore the python/build directory
+
+	* python/PKG-INFO, python/README, python/client.c, python/client.h,
+	python/nscang.c, python/setup.py, python/uthash.h: Move src/python to
+	top-level directory
+
+	Don't hide the Python module in a subdirectory, at least not as long as
+	we don't integrate it with our build system.
+
+2014-07-23  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/server/nsca-ng.c: Fix systemd(1) watchdog support
+
+	Actually register the callback function that sends the keep-alive
+	packets to systemd(1)'s watchdog with libev.
+
+2014-07-17  Alexander Golovko  <alexandro@onsec.ru>
+
+	* src/python/PKG-INFO, src/python/README, src/python/client.c,
+	src/python/client.h, src/python/nscang.c, src/python/setup.py,
+	src/python/uthash.h: Add Python client module
+
+	This module provides mostly the same inteface as the "pynsca" module for
+	the traditional NSCA protocol.
+
+2014-07-15  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* NEWS, configure.ac: NSCA-ng 1.3
+
+2014-07-14  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* .travis.yml: Add Ubuntu's Trusty repository
+
+	The ppa:pitti/systemd archive seems to no longer provide the
+	"libsystemd-daemon-dev" package.
+
+2014-06-03  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* m4/pidfile.m4: Fix pidfile(3) API detection
+
+	Make sure our copy of FreeBSD's pidfile(3) code isn't used if the system
+	provides it.  The Autoconf test got this wrong when <bsd/libutil.h> was
+	found, but <libutil.h> was not.
+
+	The issue was reported by Michael Tautschnig in Debian bug #750401.
+
+2014-02-17  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* tests/test_nsca.c: Don't forget to close PID file
+
+	Don't forget to close the PID file if some error occurred while reading
+	the file or while killing the server.
+
+	Discovered by Coverity Scan.
+
+2014-02-16  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* .travis.yml: Stylistic change
+
+	Specify anything that could have multiple elements as a list.
+
+2014-02-11  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* .travis.yml: "install" vs. "before_install"
+
+	The Travis CI documentation says:
+
+	| - Run "before_install" commands
+	|
+	|   Use this to prepare the system to install prerequisites or
+	|   dependencies (e.g. "sudo apt-get update").
+	|
+	| - Run "install" commands
+	|
+	|   Use this to install any prerequisites or dependencies necessary to
+	|   run your build.
+
+	[ http://docs.travis-ci.com/user/build-configuration/ ]
+
+	* .travis.yml: Run Coverity Scan builds on Travis CI
+
+	Trigger Coverity Scan whenever we push into the "coverity" branch.
+
+2014-02-06  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* tests/test_nsca.c: Check open(2)'s return value
+
+	Make Coverity Scan happy.
+
+	* src/common/util.c: Fix out-of-bounds write error
+
+	Our get_openssl_version() function copies the OpenSSL version string
+	into a buffer.  This commit fixes the issue that the nul-termination of
+	that copy would've overflowed the buffer if the version string was
+	overlong (which won't happen in practice).
+
+	Discovered by Coverity Scan.
+
+	* src/server/fifo.c: Fix fstat(2) error handling
+
+	Properly handle the case where fstat(2) returns -1 while looking at the
+	FIFO descriptor.  We got this wrong due to missing parenthesis.
+
+	Discovered by Coverity Scan.
+
+2014-02-05  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* .travis.yml: Add Travis CI configuration
+
+	See:
+
+		http://docs.travis-ci.com/user/getting-started/
+		http://docs.travis-ci.com/user/build-configuration/
+		http://docs.travis-ci.com/user/languages/c/
+
+2013-12-30  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* etc/nsca-ng.service: Depend on socket activation
+
+	The nsca-ng(8) server currently has no proper support for running under
+	systemd(1) without socket activation.  Therefore, the systemd.service(5)
+	should explicitly depend on the systemd.socket(5):
+
+	| If you want to make sure your service never tries to start without
+	| socket activation, it should have Requires=foo.socket; none of the
+	| default relations are strong enough to strictly prohibit starting
+	| without a socket.  I think at least the case where creating the socket
+	| fails and admin manually says "systemctl start foo.service" would
+	| always start the service without a socket otherwise.
+
+	[ http://bugs.debian.org/cgi-bin/bugreport.cgi?msg=1689;bug=727708 ]
+
+2013-12-29  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* etc/nsca-ng.service: Make sure socket is installed
+
+	| Usually you also want to make sure that when your service is installed
+	| your socket is installed too, hence add Also=foo.socket in your
+	| service file foo.service, for a hypothetical program foo.
+
+	[ daemon(7) ]
+
+2013-12-23  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/common/util.c: Fix the overflow fix
+
+	There was a typo in our simplified size_t overflow check.  It wouldn't
+	have caught the len2 == SIZE_T_MAX case.
+
+	Thanks to Christian Siefkes for noting this.
+
+	* src/common/util.c: Simplify an overflow check
+
+	Thanks go to Marc Espie for pointing out (in a discussion unrelated to
+	NSCA-ng) that the size_t overflow check in our string concatenation
+	function was unnecessarily complex.
+
+2013-12-19  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* etc/nsca-ng.socket: Add a description
+
+	... and pointers to the NSCA-ng server man pages.
+
+	* etc/nsca-ng.service: Use title case in description
+
+	The unit files provided with systemd(1) use title case for their
+	descriptions, so let's do that as well.
+
+	* etc/nsca-ng.cfg: Update comment
+
+	These days, users may specify "hosts" expressions.
+
+2013-12-14  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* README, configure.ac, etc/nsca-ng.service, etc/nsca-ng.socket,
+	lib/system.h, m4/systemd.m4, man/nsca-ng.cfg.in, man/nsca-ng.in,
+	src/common/log.c, src/common/log.h, src/common/tls.c,
+	src/server/Makefile.am, src/server/nsca-ng.c: Add optional systemd(1)
+	support to nsca-ng(8)
+
+	Make the server play nicely with systemd(1) (or any compatible init
+	system) by adding optional support for
+
+	- socket activation,
+	- the "notify" process startup type (see systemd.service(5)),
+	- the "WatchdogSec" feature (see systemd.service(5)), and
+	- systemd(1)-style logging to the standard error output (see daemon(7)
+	  and sd-daemon(3)).
+
+	No new nsca-ng(8) option has been added.  When compiled with systemd(1)
+	support, the server enables these features automatically if it was
+	socket activated.
+
+	The systemd(1) integration will remain completely optional.
+
+	* src/common/log.c: Flush stderr stream
+
+	Log output should not be buffered.
+
+2013-12-13  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/server/nsca-ng.c: Don't specify "unused" attribute in declaration
+
+	Specify __attribute__((__unused__)) only in function definitions, not in
+	function declarations.  The latter is unnecessary, and we didn't do that
+	elswehere in the code.
+
+	* src/client/send_nsca.c: Remove nonsensical cast
+
+	Our xasprintf() returns no value.
+
+2013-12-09  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/client/conf.c: Don't stumble over CRLF in send_nsca.cfg(5) files
+
+	The client failed at coping with CRLF-terminated lines in
+	send_nsca.cfg(5) files.
+
+	Thanks to Paul Richards for noting this bug.
+
+	* src/common/tls.c: Include <errno.h>
+
+	Include <errno.h>, as the "errno" variable is used by the
+	check_tls_error() function.
+
+2013-12-01  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* lib/pidfile/pidfile.c: Make Clang happy
+
+	Silence two "implicit conversion loses integer precision" warnings.
+
+2013-11-22  Alexander Sulfrian  <alexander@sulfrian.net>
+
+	* tests/input.at: Fix tests if directory contains special chars
+
+2013-11-22  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* tests/input.at: Tiny cosmetic change
+
+2013-11-13  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* TODO: Add another wish list item
+
+	The client should queue commands and check results if the server is not
+	available.
+
+	Suggested by Daniel Parthey.
+
+	* m4/xprintf.m4: Fix vsnprintf(3) detection
+
+	Fix a copy and paste error in the definition of HW_FUNC_VNSPRINTF.
+
+	The issue was spotted by Dave Hart for the NTP project.
+
+2013-11-12  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* m4/aio.m4: Use AIOLIBS for aio_init(3) check
+
+	Since commit 60ff499, the linker options required to use the POSIX AIO
+	API are saved into AIOLIBS instead of into LIBS.  This broke our
+	Autoconf test whether aio_init(3) is available.
+
+2013-11-07  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* build-aux/make-openssl: Don't use <http://nagios-plugins.org/> for
+	testing
+
+	<http://nagios-plugins.org/> redirects to <https://nagios-plugins.org/>
+	these days, and we don't want build-aux/make-openssl to stumble over SSL
+	issues when checking for browser availability.
+
+	* src/server/nsca-ng.c: Ignore errors when closing file descriptors
+
+	Don't check the return value of closefrom(3) or fcntl(3) when closing
+	open file descriptors on startup.  If there are no file descriptors to
+	close, closefrom(3) will fail with EBADF on NetBSD and OpenBSD.  On
+	FreeBSD and Solaris, closefrom(3) is actually declared to return void.
+
+	Thanks to Stuart Henderson for reporting this bug.
+
+2013-11-06  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* NEWS, configure.ac: NSCA-ng 1.2
+
+	* NEWS: Let list markers start at the left margin
+
+	List markers usually (though not necessarily) start at the left margin in
+	Markdown files.  Vim's syntax highlighting stumbles a bit if they don't.
+
+2013-09-20  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* README.md: Add symbolic link: README.md -> README
+
+	Add a symbolic link so that some web-based Git hosting services render
+	the README file as Markdown.
+
+2013-09-12  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/client/parse.c: Cast time_t value to unsigned long for *printf(3)
+
+	Prevent crash on platforms where sizeof(time_t) > sizeof(unsigned long),
+	see <http://thread.gmane.org/gmane.os.openbsd.ports/63555>.
+
+	Thanks to Florian Obser and Stuart Henderson for reporting this issue.
+
+2013-08-17  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* PROTOCOL: Fix a little typo
+
+2013-08-06  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* man/nsca-ng.cfg.in, src/server/conf.c: Support specifying defaults for
+	authorizations
+
+	Allow for specifying authorization settings outside of "authorize"
+	sections.  They will then serve as a fallback for "authorize" sections
+	that don't define these settings.
+
+	We don't use a libConfuse validation callback to implement this feature,
+	as it would then only work for default settings specified prior to the
+	corresponding "authorize" section(s).  This behaviour would be
+	especially problematic if multiple configuration files in a directory
+	tree are included recursively, as the order of inclusion is undefined.
+
+2013-08-05  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* man/nsca-ng.cfg.in: Improve wording
+
+	* src/server/auth.c: Remove code duplication
+
+	Use a single loop to match the configured "hosts", "services", and
+	"commands" patterns against submitted commands.  This change might also
+	speed up the code a tiny bit, as cfg_getopt() is now called only once
+	(by us) instead of twice (by libConfuse).
+
+	* src/server/conf.c: Add missing function prototype
+
+	Forward declare the host_to_command() function.
+
+2013-08-04  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/server/conf.c: Use validation callback for "authorize" sections
+
+	Move the check whether a password was specified from hash_auth_blocks()
+	into a validation callback function.
+
+	* src/server/conf.c: Minor cosmetic change
+
+	Sort cfg_set_validate_func() calls alphabetically.
+
+2013-08-02  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* configure.ac, m4/networking.m4: Move checks for network types to
+	m4/networking.m4
+
+	The checks for the availability of types related to networking belong
+	into m4/networking.m4, not into configure.ac.
+
+	* src/client/send_nsca.c: Be more strict when parsing escape sequences
+
+	Let send_nsca(8) die with an error message if "-d '\<x>'" or "-e '\<x>'"
+	is specified and "\<x>" is not a recognized escape sequence (instead of
+	silently using "<x>" in this case).
+
+	* configure.ac, src/common/tls.c: Check availability of "struct
+	sockaddr_storage"
+
+	Use "struct sockaddr_in6" or "struct sockaddr_in" on systems that don't
+	provide "struct sockaddr_storage".
+
+2013-08-01  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* man/send_nsca.in, src/client/send_nsca.c: Teach the client about
+	backslash escape sequences
+
+	Let send_nsca(8)'s "-d" and "-e" flags accept C-style escape sequences,
+	so that e.g. "-e '\n'" can be specified.  Octal numbers with a leading
+	zero and hexadecimal numbers prefixed with "0x" are also accepted.
+
+	* src/server/conf.c: Don't die in parse_include()
+
+	Let the callers of the parse_include() function check for errors.  This
+	is just a cosmetic change, the behaviour remains the same.
+
+2013-07-29  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/server/conf.c: Fix a (harmless) memory leak
+
+	When including files or directories, free(3) the memory allocated by
+	libConfuse's cfg_tilde_expand() function.
+
+	* src/server/conf.c: Don't confuse libConfuse when including trees
+
+	When including configuration files in a directory tree recursively, call
+
+		cfg_parse_buf(cfg, "include(<file>)")
+
+	for every included file instead of using the cfg_include() function
+	directly.  This is necessary to keep libConfuse's internal state
+	consistent.  The library would otherwise reject to include more than
+	MAX_INCLUDE_DEPTH (currently 10) files per directory tree, among other
+	issues.
+
+2013-07-28  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* man/nsca-ng.in, src/server/conf.c, src/server/nsca-ng.c: Let the
+	server accept "-c <directory>"
+
+	If a directory is specified via nsca-ng(8)'s "-c" flag, read the
+	configuration from all "*.cfg" and "*.conf" files in the specified
+	directory and all subdirectories.
+
+2013-07-19  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* TODO: Add another wish list item
+
+	The server should allow the user to specify one or more permitted
+	subnets.  Connections from clients outside these subnets should be
+	rejected.
+
+2013-07-18  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* etc/nsca-ng.cfg, man/nsca-ng.cfg.in, src/server/conf.c: Support
+	include(<directory>) in nsca-ng.cfg(5)
+
+	Let nsca-ng.cfg(5)'s "include" directive accept directory path names.
+	If a directory is specified, include all "*.cfg" and "*.conf" files in
+	this directory and all subdirectories.
+
+	* etc/nsca-ng.cfg: Cosmetic change
+
+	We usually use the file extension ".cfg" for configuration files.
+
+2013-07-17  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* configure.ac, src/server/nsca-ng.c, tests/test_nsca.c: Close open file
+	descriptors on server startup
+
+	Let nsca-ng(8) close any inherited file descriptors (except for stdin,
+	stdout, and stderr) on startup.
+
+2013-06-03  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* build-aux/generate-change-log: Convert ChangeLog from UTF-8 to
+	US-ASCII
+
+	Transliterate any non-ASCII characters when creating the ChangeLog file
+	from the Git history.
+
+2013-06-02  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* TODO: Add OpenSSL-related tasks
+
+	Also list wish list items that require OpenSSL to be patched (so that we
+	have a place to save any relevant URLs).
+
+2013-05-29  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* Makefile.am: Cosmetic change
+
+2013-05-22  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* m4/aio.m4: Prefix variable name with "nsca"
+
+2013-05-20  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/client/send_nsca.c, src/server/nsca-ng.c: Explicitly ignore
+	ev_run()'s return value
+
+	The ev_run() function returns a boolean value as of libev 4.15.
+
+	* lib/ev/ev.c, lib/ev/ev.h, lib/ev/ev_epoll.c, lib/ev/ev_kqueue.c,
+	lib/ev/ev_vars.h, lib/ev/ev_win32.c, lib/ev/ev_wrap.h: Update embedded
+	libev code to version 4.15
+
+	Update our copy of libev from version 4.11 to version 4.15.  The new
+	release provides a number of bug fixes and minor enhancements.
+
+2013-05-12  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/common/tls.c: Don't call OPENSSL_config(3)
+
+	The OPENSSL_config(3) man page claims that this function "ignores all
+	errors", but that's not true: at least OpenSSL 1.0.1e exit(3)s on
+	certain error conditions in the OPENSSL_config(3) function (e.g., if the
+	check whether the configuration file exists fails due to missing
+	permissions).  We therefore no longer call this function.
+
+2013-04-17  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* tests/input.at, tests/local.at: Minor test suite cleanups
+
+	Move all capturing of "input" files into tests/local.at:NSCA_CHECK().
+	Also, don't capture "expout" files.  If the actual output doesn't match
+	the expected output, the diff(1) is included anyway.
+
+	* tests/test_nsca.c: Apply another test suite fix for GNU Hurd
+
+	On GNU Hurd, opening the FIFO sometimes fails with EINTR (even though no
+	signal has been delivered).
+
+2013-04-16  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/server/fifo.c: Use fstat(2) to check if command file is a FIFO
+
+	Use fstat(2) rather than stat(2) to check whether the command file is a
+	named pipe.  This fixes a race condition in the case where the command
+	file is recreated after the NSCA-ng server has open(2)ed it.
+
+	* m4/aio.m4: Check whether AIO signals are delivered
+
+	At least on Debian GNU/kFreeBSD 7.0 RC1, the POSIX AIO implementation
+	fails to deliver completion notification signals (but seems to work
+	otherwise).  The ./configure script now detects this case and then
+	disables POSIX AIO usage.
+
+2013-04-15  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* tests/test_nsca.c: Fix test cases for GNU Hurd
+
+	GNU Hurd doesn't like the the trick we're using in tests/test_nsca.c to
+	avoid having to wait until the server notices that we opened the command
+	file for reading.  This means that each check might block for a few
+	seconds on Hurd, but that's still preferable to failing test cases.
+
+2013-04-14  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* configure.ac: Communicate PIPE_BUF default value to test suite
+
+	On platforms that don't define PIPE_BUF (such as GNU Hurd), we assume a
+	value of 512 in src/server/fifo.c (as POSIX guarantees PIPE_BUF >= 512).
+	We now communicate this default value to Autotest in order to fix the
+	corresponding test case on such platforms.
+
+2013-04-12  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* NEWS, configure.ac: NSCA-ng 1.1
+
+	* NEWS: Cosmetic change
+
+	Use imperative language throughout the NEWS file.
+
+	* man/nsca-ng.cfg.in: Add "chroot" example
+
+	The idea is to mention all available variables in the EXAMPLES section
+	of the nsca-ng.cfg(5) man page.
+
+2013-04-10  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* contrib/invoke_check: Survive exit codes != 0
+
+	Don't die (due to "set -e") if the plugin returns an exit code other
+	than zero.
+
+	Thanks to Mirko Tasler for tracking down this bug.
+
+	* man/send_nsca.in, src/client/client.c, src/client/client.h,
+	src/client/send_nsca.c, tests/input.at: New send_nsca(8) option: "-e
+	<separator>"
+
+	Add the "-e" flag, which allows for specifying a delimiter to use
+	instead of the ETB character for separating check results.  A newline
+	character may be specified to get compatibility with the original NSCA
+	releases prior to version 2.9.
+
+2013-04-09  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* etc/nsca-ng.cfg, man/nsca-ng.cfg.in, src/server/auth.c,
+	src/server/conf.c, tests/auth.at: Support "hosts" patterns in
+	"authorize" sections
+
+	The new "hosts" variable is syntactic sugar (along the lines of the
+	"services" variable); i.e., the following assignments are equivalent:
+
+		hosts = "foo"
+		commands = "PROCESS_HOST_CHECK_RESULT;foo;.+"
+
+	* etc/nsca-ng.cfg: Apply minor corrections
+
+	Improve the description of authorization patterns.
+
+	* m4/aio.m4, tests/auth.at, tests/input.at: Cosmetic changes in M4 macro
+	calls
+
+	Put empty M4 macro arguments at the end of lines rather than at the
+	beginning.
+
+	* tests/auth.at: Add service check test case
+
+	Test whether authorization patterns for (legitimate) service check
+	results work as expected.
+
+2013-03-23  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* README: Fix typo
+
+2013-03-18  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/client/client.c, src/common/util.c, src/common/util.h,
+	tests/input.at: Let send_nsca(8) ignore empty input lines
+
+	A command such as the following triggered an "Input format incorrect"
+	message:
+
+		printf 'jupiter\tdisk\t0\okay\n\27\n' | send_nsca
+
+	This happened because the trailing newline character was interpreted as
+	another check result.  In practice, such a trailing newline character
+	might be generated unintentionally when using echo(1) to pipe check
+	results into the client.  Therefore, send_nsca(8) now ignores empty
+	input lines.
+
+2013-03-17  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* m4/openssl.m4: Link against libdl only if necessary
+
+	We should link against libdl whenever necessary, but not whenever
+	possible.
+
+2013-03-16  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* configure.ac: Support --disable-maintainer-mode
+
+	Debian's dh_auto_configure(1) (which is used for building packages)
+	calls the ./configure script with the --disable-maintainer-mode flag.
+
+2013-03-14  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* THANKS: Add a THANKS file
+
+	The good ideas came from Heiko!
+
+2013-03-13  Stuart Henderson  <stu@spacehopper.org>
+
+	* etc/nsca-ng.cfg, man/nsca-ng.cfg.in, src/server/conf.c,
+	src/server/nsca-ng.c: Add a directive to chroot(2) at startup
+
+	Allow the user to specify a directory the server should chroot(2) into
+	on startup.
+
+2013-03-12  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/client/input.c: Cosmetic change: replace 0 with NULL
+
+	Compare pointers to NULL rather than 0 (for clarity).
+
+2013-03-11  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* Makefile.am, build-aux/generate-change-log: s/python/perl/
+
+	Replace the Python script for creating the ChangeLog file with a version
+	written in Perl.  The reason is simply that the Python binary on the
+	system I use for creating the NSCA-ng releases is called "python2.7",
+	not "python"; and reimplementing the thing in Perl seems simpler than
+	adding magic to update the Shebang line when Python is updated :-)
+
+2013-03-10  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* README: Slightly improve wording
+
+	Improve the wording in the README file a bit.
+
+2013-03-08  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* build-aux/man2ps: Remove outdated comment
+
+	The script no longer does what the comment said.
+
+2013-03-06  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* NEWS, configure.ac: NSCA-ng 1.0
+
+	* etc/nsca-ng.cfg: Fix indentation
+
+	Remove a superfluous tab character.
+
+2013-03-04  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* contrib/invoke_check: Fix our send_nsca(8) call
+
+	The invoke_check script doesn't feed send_nsca(8) with "raw" commands,
+	so specifying the "-C" option was incorrect.
+
+	* contrib/downtime: Fix our timestamps
+
+	The timestamps must be submitted as the number of seconds since the
+	Epoch.
+
+	* contrib/debug_server: Fix send_nsca.cfg(5) parsing
+
+	Quote the argument to the "eval" call that parses the configuration
+	file.
+
+	* COPYING: Slightly improve wording
+
+	Improve the wording in the COPYING file a bit.
+
+	* src/client/send_nsca.c, src/server/server.c: Make Clang happy
+
+	Fix two minor compiler warnings.
+
+	* PROTOCOL: Improve wording a bit
+
+	Slightly improve the wording of the description of the PUSH request.
+
+2013-03-03  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* NEWS, PROTOCOL, README, TODO, contrib/README: Mark Markdown files as
+	such for Vim
+
+	Specify "filetype=markdown" in the Vim modeline of Markdown files.
+
+	* configure.ac: Set AC_CONFIG_MACRO_DIR()
+
+	The Autoconf manual suggests to specify the AC_CONFIG_MACRO_DIR(), as it
+	might be used "by future versions of commands like autoreconf that trace
+	macro calls".
+
+	* etc/nsca-ng.cfg: Give better examples
+
+	Improve the clarity of the authorization section examples a bit.
+
+	* etc/nsca-ng.cfg: Add a default "authorize" section
+
+	Add an "authorize" section which lets the server start out of the box
+	(instead of bailing out because the user didn't specify an "authorize"
+	section).  The new configuration still doesn't permit clients to submit
+	anything to Nagios (it just allows authenticated clients to talk to the
+	server), so the client will spit out a "not authorized" message until
+	the user edits the nsca-ng.cfg(5) file.
+
+2013-03-02  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* TODO: Add a wish list item
+
+	The client should support talking to multiple servers.
+
+2013-03-01  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/server/fifo.c: Log a notice when (re)opening the command file
+
+	The server should log a notice when opening the command file succeeds
+	after having failed before.
+
+	* PROTOCOL: Clarifications regarding PUSHed commands
+
+	Explicitly note that PUSHed "monitoring commands" shall not be
+	CRLF-terminated, and that embedded newline characters and backslashes
+	must be escaped.
+
+2013-02-27  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* man/nsca-ng.cfg.in, man/send_nsca.cfg.in, src/client/conf.c,
+	src/server/conf.c: Use AES256-CBC instead of RC4 by default
+
+	We used the PSK-RC4-SHA cipher suite by default, since the CBC ciphers
+	are broken in OpenSSL 1.0.1d.  However, many other applications don't
+	work (properly) when linked against 1.0.1d either, and it was quickly
+	replaced with 1.0.1e (which fixes the issue), so the number of 1.0.1d
+	users is probably very small.  Therefore, it should be safe to use the
+	PSK-AES256-CBC-SHA cipher by default.
+
+	* src/server/fifo.c: Only use the command file if it's a named pipe
+
+	Check whether the command file is a FIFO after opening it.  If it isn't,
+	close it again, log a warning message, and retry opening it later on.
+
+2013-02-26  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* m4/aio.m4: Use AIOLIBS when testing POSIX AIO
+
+	Since commit 60ff499, the linker options required to use the POSIX AIO
+	API are saved into AIOLIBS instead of into LIBS.  This broke our
+	Autoconf test whether POSIX AIO actually works.
+
+	* etc/nsca-ng.cfg, man/nsca-ng.cfg.in: Add "authorize" section for
+	PING-only access
+
+	Add an example "authorize" section which shows how to allow clients to
+	talk to the server without allowing them to submit anything to the
+	command file.  This might be useful for monitoring the server.
+
+2013-02-25  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/common/tls.c: Add missing "break" statement
+
+	If the peer aborted the TLS shutdown, the check_tls_error() function
+	generated an additional, bogus warning message due to a missing "break"
+	statement.
+
+	* NEWS, configure.ac: NSCA-ng 0.3
+
+	* PROTOCOL: Markup changes
+
+	Format commands and arguments as `code`.
+
+2013-02-23  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* README, configure.ac: Suggest nsca-ng.org website and lists for
+	support
+
+	For support, suggest the nsca-ng.org mailing lists and website instead
+	of my personal email address.
+
+2013-02-22  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* NEWS, PROTOCOL, README, TODO, contrib/README: Convert plain text
+	documentation to Markdown
+
+	Use Markdown syntax for the plain text documentation files so that we
+	can generate HTML versions of those for the website.
+
+	* man/nsca-ng.cfg.in, man/send_nsca.cfg.in: Man pages: Replace "\(rs"
+	with "\\"
+
+	The System V roff macros usually don't support "\(rs".
+
+2013-02-21  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* contrib/invoke_check: Cosmetic change
+
+	Remove a trailing "." from an error message.
+
+	* build-aux/make-confuse, build-aux/make-openssl, build-aux/man2ps,
+	contrib/acknowledge, contrib/debug_server,
+	contrib/disable_notifications, contrib/downtime,
+	contrib/enable_notifications, contrib/invoke_check,
+	contrib/nsca-ng.init, tests/atlocal.in: Fix Vim modelines
+
+	The trailing ":" was missing in some of our Vim modelines.
+
+2013-02-20  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/client/client.c, src/common/tls.c, src/common/tls.h,
+	src/server/server.c: Add session ID to connection-related log messages
+
+	Mention the session ID in all log messages related to the TLS
+	communication in order to ease debugging.
+
+2013-02-19  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/server/nsca-ng.c: Fix nsca-ng(8)'s "-s" and "-S" flags
+
+	The "-s" and "-S" options were effectively ignored by nsca-ng(8).
+
+	* src/server/nsca-ng.c: Call ev_loop_fork() only if daemonizing
+
+	If nsca-ng(8) is executed with the "-F" option, it doesn't fork(2).
+
+	* man/nsca-ng.cfg.in: Cosmetic changes
+
+	Change the word wrapping of the comments in the example nsca-ng.cfg(5)
+	file.
+
+	* man/nsca-ng.cfg.in: Mark setting as mandatory
+
+	Mention that the password setting in authorization sections is
+	mandatory.
+
+	* man/nsca-ng.cfg.in, man/nsca-ng.in: Shorten log level description in
+	server man pages
+
+	Remove the example for warning messages.  The NSCA-ng server generates
+	all sorts of warnings, not just connection timeouts.
+
+	* build-aux/man2ps: Really use GNU groff extensions
+
+	Heirloom troff(1b)'s "-mg" option must be used to enable GNU groff
+	extensions.  I forgot to do this in commit 24ce669.
+
+	* NEWS, configure.ac: NSCA-ng 0.2
+
+	* src/client/send_nsca.c: Fix send_nsca(8)'s "-s" flag
+
+	The "-s" option was effectively ignored by send_nsca(8).
+
+2013-02-18  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/server/fifo.c: Use "async" prefix for all AIO-related functions
+
+	Always use "async" as a prefix for the names of AIO-related functions.
+
+	* src/server/fifo.c: Clarify a comment
+
+	Make it clear that the point of using ev_invoke() is to invoke the
+	callback immediately.
+
+2013-02-17  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* README: Add compatibility note
+
+	Add a note for NSCA 2.x users to the README file.
+
+2013-02-13  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* build-aux/man2ps: Use GNU groff extensions
+
+	Let Heirloom troff use GNU groff extensions (by specifying the "-mg"
+	flag) in order to simplify the script.
+
+	* man/nsca-ng.cfg.in: Don't use em dash character
+
+	GNU nroff gets the line wrapping wrong when em dash characters are used.
+
+	* etc/send_nsca.cfg: Mention default settings
+
+	Add comments mentioning the default settings to the sample client
+	configuration file.
+
+2013-02-12  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* .gitignore: Let Git ignore /man/*.ps files
+
+	GNU Make removes the intermediate PostScript files during "make pdf",
+	but other Make implementations don't.
+
+	* m4/confuse.m4, m4/networking.m4, m4/openssl.m4: Fix order of linker
+	arguments
+
+	When linking statically, the order in which libraries and object files
+	are specified on the linker command line matters.  So, make sure that
+	library A is specified before library B if A depends on B.
+
+	* m4/aio.m4, m4/pidfile.m4, src/server/Makefile.am: Don't link client
+	against server's libraries
+
+	The POSIX AIO API and FreeBSD's pidfile(3) functions are used only by
+	the server, so don't link the client against those libraries.
+
+2013-02-11  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* build-aux/clang-analyze: Add some include paths
+
+	Add a few include paths required to make build-aux/clang-analyze work on
+	my NetBSD system.
+
+	* build-aux/clang-analyze: Define NSCA_VERSION
+
+	NSCA_VERSION is defined via "-D".
+
+	* man/send_nsca.in: Tidy up "-d" flag description
+
+	The fact that the argument to the "-d" option must be a single character
+	need not be mentioned twice :-)
+
+	* man/send_nsca.in: Mention that usage errors are written to stderr
+
+	Add a note to the send_nsca.cfg(5) man page to clarify that usage errors
+	are written to the standard error output even if the "-s" option is
+	specified.
+
+	* man/nsca-ng.cfg.in: s/client ID/client identity/
+
+	The send_nsca.cfg(5) man page refers to the term "client identity", so
+	let's use that in the nsca-ng.cfg(5) man page as well.
+
+	* src/common/util.c: Cosmetic change: replace 0 with '\0'
+
+	A '\0' should be assigned to nul-terminate a string.
+
+2013-02-10  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/common/Makefile.am, src/common/util.c: Use git-describe(1) output
+	in version string
+
+	Include the Git revision in the version string if a non-release version
+	of NSCA-ng is built from Git.  (The version string is only updated if
+	src/common/util.o is rebuilt, though.)
+
+	* tests/Makefile.am: Let "make distclean" remove tests/atconfig
+
+	The tests/atconfig file is created from tests/atconfig.in by the
+	./configure script and should therefore be removed by "make distclean".
+
+	* etc/nsca-ng.cfg, src/server/conf.c, tests/auth.at: Be more careful
+	with service patterns
+
+	Make sure the default host name pattern (used when service patterns
+	without host name part are specified) only matches the host name field
+	of service check results.
+
+	Without this change, "service = disk" was expanded to:
+
+		PROCESS_SERVICE_CHECK_RESULT;.*;disk;.+;.+
+
+	This pattern would have also matched "http" service check results:
+
+		PROCESS_SERVICE_CHECK_RESULT;saturn;http;0;disk;0;oops
+
+	While at it, adjust a comment in the sample configuration file
+	accordingly, and add a test case for this issue.
+
+2013-02-09  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* src/server/server.c: Mention the session ID when refusing data
+
+	The session ID can be useful when tracing problems, so we should log it
+	when we refuse a monitoring command (and not just when accepting data).
+
+	* src/server/conf.c: Accept non-numeric service check result status
+
+	Nagios accepts a non-numeric check result status (such as "OK"), so we
+	should accept that, too (when matching against service patterns).
+
+2013-02-08  Holger Weiss  <holger@weiss.in-berlin.de>
+
+	* README, contrib/README, contrib/debug_server, etc/Makefile.am,
+	etc/nsca-ng.cfg, etc/send_nsca.cfg, man/Makefile.am, man/nsca-ng.cfg.in,
+	man/nsca-ng.in, man/send_nsca.cfg.in, man/send_nsca.in,
+	src/client/conf.h, src/server/conf.h, tests/input.at, tests/local.at,
+	tests/test_nsca.c: Use ".cfg" as the configuration file extension
+
+	Nagios and NSCA configuration files usually have a ".cfg" extension, so
+	we should use that too.
+
+	* .gitignore, AUTHORS, COPYING, Makefile.am, NEWS, PROTOCOL, README,
+	TODO, autogen.sh, build-aux/Makefile.am, build-aux/clang-analyze,
+	build-aux/generate-change-log, build-aux/make-confuse,
+	build-aux/make-openssl, build-aux/man2ps, configure.ac,
+	contrib/Makefile.am, contrib/README, contrib/acknowledge,
+	contrib/debug_server, contrib/disable_notifications, contrib/downtime,
+	contrib/enable_notifications, contrib/invoke_check,
+	contrib/nsca-ng.init, etc/Makefile.am, etc/nsca-ng.conf,
+	etc/send_nsca.conf, etc/valgrind.supp, lib/Makefile.am, lib/daemon.c,
+	lib/ev/Makefile.am, lib/ev/ev.c, lib/ev/ev.h, lib/ev/ev_epoll.c,
+	lib/ev/ev_kqueue.c, lib/ev/ev_poll.c, lib/ev/ev_port.c,
+	lib/ev/ev_select.c, lib/ev/ev_vars.h, lib/ev/ev_win32.c,
+	lib/ev/ev_wrap.h, lib/ev/libev.m4, lib/pidfile/Makefile.am,
+	lib/pidfile/flock.c, lib/pidfile/flopen.c, lib/pidfile/libutil.h,
+	lib/pidfile/pidfile.c, lib/progname.c, lib/strcasecmp.c, lib/strdup.c,
+	lib/strncasecmp.c, lib/system.h, lib/wrappers.c, lib/wrappers.h,
+	lib/xprintf.c, m4/aio.m4, m4/confuse.m4, m4/daemon.m4, m4/ev.m4,
+	m4/networking.m4, m4/openssl.m4, m4/pidfile.m4, m4/progname.m4,
+	m4/xprintf.m4, man/Makefile.am, man/nsca-ng.conf.in, man/nsca-ng.in,
+	man/send_nsca.conf.in, man/send_nsca.in, src/Makefile.am,
+	src/client/Makefile.am, src/client/auth.c, src/client/auth.h,
+	src/client/client.c, src/client/client.h, src/client/conf.c,
+	src/client/conf.h, src/client/input.c, src/client/input.h,
+	src/client/parse.c, src/client/parse.h, src/client/send_nsca.c,
+	src/client/send_nsca.h, src/common/Makefile.am, src/common/buffer.c,
+	src/common/buffer.h, src/common/log.c, src/common/log.h,
+	src/common/tls.c, src/common/tls.h, src/common/util.c,
+	src/common/util.h, src/server/Makefile.am, src/server/auth.c,
+	src/server/auth.h, src/server/conf.c, src/server/conf.h,
+	src/server/fifo.c, src/server/fifo.h, src/server/hash.c,
+	src/server/hash.h, src/server/nsca-ng.c, src/server/server.c,
+	src/server/server.h, tests/Makefile.am, tests/atlocal.in, tests/auth.at,
+	tests/basic.at, tests/input.at, tests/local.at, tests/test_nsca.c,
+	tests/testsuite.at: Initial import of NSCA-ng
+
+	This is a fully functional first version of NSCA-ng.  It provides the
+	following features:
+
+	* Submission of arbitrary "monitoring commands" (not just check
+	  results) of arbitrary size.
+
+	* Client-specific passwords.
+
+	* Fine-grained authorization control.
+
+	* Optional random delay before the client connects to the server.  This
+	  might be useful if many clients are invoked simultaneously.
+
+	* Simple, extensible, and documented text-based protocol.
+
+	* TLS encryption and pre-shared key authentication as per RFC 4279.
+
+	NSCA-ng is short for "Not just a Service Check Acceptor" ("next
+	generation").
+
