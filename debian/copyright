@@ -29,7 +29,9 @@ License: BSD-2-clause
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Files: debian/*
-Copyright: Project <legal@scibian.org>
+Copyright:
+  2013 Alexander Wirt <formorer@debian.org>
+  2017 Project <legal@scibian.org>
 License: BSD-2-clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
