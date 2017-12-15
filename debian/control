@@ -12,8 +12,8 @@ Build-Depends: autotools-dev,
                libssl-dev,
                libsystemd-dev
 Standards-Version: 3.9.6
-Vcs-Browser: https://github.com/scibian/pkg-nsa-ng
-Vcs-Git: https://github.com/scibian/pkg-nsa-ng.git
+Vcs-Browser: https://github.com/scibian/pkg-nsca-ng
+Vcs-Git: https://github.com/scibian/pkg-nsca-ng.git
 Homepage: http://www.nsca-ng.org/
 
 Package: nsca-ng-client
